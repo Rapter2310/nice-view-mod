@@ -17,8 +17,6 @@ LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 #include <zmk/event_manager.h>
 #include <zmk/events/battery_state_changed.h>
 
-#include <zephyr/random/random.h>
-
 LV_IMG_DECLARE(balloon);
 LV_IMG_DECLARE(mountain);
 
@@ -189,8 +187,7 @@ int zmk_widget_status_init(struct zmk_widget_status *widget, lv_obj_t *parent) {
     lv_canvas_set_buffer(top, widget->cbuf, CANVAS_SIZE, CANVAS_SIZE, CANVAS_COLOR_FORMAT);
 
     widget->art = lv_image_create(widget->obj);
-    bool random = sys_rand32_get() & 1;
-    lv_image_set_src(widget->art, random ? &balloon : &mountain);
+    lv_image_set_src(widget->art, (k_cycle_get_32() & 1) ? &balloon : &mountain);
     lv_obj_align(widget->art, LV_ALIGN_TOP_LEFT, 0, 0);
 
     lv_obj_t *bottom = lv_canvas_create(widget->obj);
