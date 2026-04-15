@@ -17,9 +17,6 @@ LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 #include <zmk/event_manager.h>
 #include <zmk/events/battery_state_changed.h>
 
-LV_IMG_DECLARE(balloon);
-LV_IMG_DECLARE(mountain);
-
 extern uint8_t zmk_split_esb_display_get_layer(void);
 extern uint8_t zmk_split_esb_display_get_wpm(void);
 
@@ -92,7 +89,7 @@ static void draw_top(lv_obj_t *widget, const struct status_state *state) {
 }
 
 static void draw_bottom(lv_obj_t *widget, const struct status_state *state) {
-    lv_obj_t *canvas = lv_obj_get_child(widget, 2);
+    lv_obj_t *canvas = lv_obj_get_child(widget, 1);
 
     lv_draw_rect_dsc_t rect_black_dsc;
     init_rect_dsc(&rect_black_dsc, LVGL_BACKGROUND);
@@ -185,10 +182,6 @@ int zmk_widget_status_init(struct zmk_widget_status *widget, lv_obj_t *parent) {
     lv_obj_t *top = lv_canvas_create(widget->obj);
     lv_obj_align(top, LV_ALIGN_TOP_RIGHT, 0, 0);
     lv_canvas_set_buffer(top, widget->cbuf, CANVAS_SIZE, CANVAS_SIZE, CANVAS_COLOR_FORMAT);
-
-    widget->art = lv_image_create(widget->obj);
-    lv_image_set_src(widget->art, (k_cycle_get_32() & 1) ? &balloon : &mountain);
-    lv_obj_align(widget->art, LV_ALIGN_TOP_LEFT, 0, 0);
 
     lv_obj_t *bottom = lv_canvas_create(widget->obj);
     lv_obj_align(bottom, LV_ALIGN_TOP_LEFT, -44, 0);

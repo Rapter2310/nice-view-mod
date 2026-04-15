@@ -16,7 +16,6 @@ struct zmk_widget_status {
     lv_obj_t *obj;
     uint8_t cbuf[CANVAS_BUF_SIZE];    // top: battery + wpm
     uint8_t cbuf3[CANVAS_BUF_SIZE];   // bottom: layer name
-    lv_obj_t *art;                    // middle: balloon/mountain art
     struct status_state state;
 };
 
