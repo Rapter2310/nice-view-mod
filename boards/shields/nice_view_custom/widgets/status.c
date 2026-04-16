@@ -144,7 +144,6 @@ ZMK_SUBSCRIPTION(widget_battery_status, zmk_battery_state_changed);
 ZMK_SUBSCRIPTION(widget_battery_status, zmk_usb_conn_state_changed);
 #endif
 
-
 static void esb_display_poll_work_cb(struct k_work *work);
 static K_WORK_DEFINE(esb_display_poll_work, esb_display_poll_work_cb);
 
@@ -159,6 +158,14 @@ static void esb_display_poll_work_cb(struct k_work *work) {
 
     struct zmk_widget_status *widget;
     SYS_SLIST_FOR_EACH_CONTAINER(&widgets, widget, node) {
+        
+        bool layer_changed = (widget->state.layer_index != layer);
+        bool graph_active = (wpm > 0) || (widget->state.wpm[9] > 0);
+
+        if (!layer_changed && !graph_active) {
+            continue; 
+        }
+
         // update layer
         widget->state.layer_index = layer;
         widget->state.layer_label = get_layer_name(layer);
