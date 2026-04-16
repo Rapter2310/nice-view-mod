@@ -171,13 +171,13 @@ static void esb_display_poll_work_cb(struct k_work *work) {
         bool layer_changed = (widget->state.layer_index != layer);
         bool graph_active = (wpm > 0) || wpm_history_nonzero(&widget->state);
 
+        // always update layer state so draw_bottom renders correctly
+        widget->state.layer_index = layer;
+        widget->state.layer_label = get_layer_name(layer);
+
         if (!layer_changed && !graph_active) {
             continue; 
         }
-
-        // update layer
-        widget->state.layer_index = layer;
-        widget->state.layer_label = get_layer_name(layer);
 
         // shift WPM history and append new value
         for (int i = 0; i < 9; i++) {
@@ -205,11 +205,16 @@ int zmk_widget_status_init(struct zmk_widget_status *widget, lv_obj_t *parent) {
 
     memset(widget->state.wpm, 0, sizeof(widget->state.wpm));
     widget->state.layer_index = 0;
-    widget->state.layer_label = NULL;
+    widget->state.layer_label = get_layer_name(0);
 
     sys_slist_append(&widgets, &widget->node);
 
     widget_battery_status_init();
+
+    // draw both canvases immediately so the screen isn't blank on boot
+    draw_top(widget->obj, &widget->state);
+    draw_bottom(widget->obj, &widget->state);
+
     k_timer_start(&esb_display_poll_timer, K_SECONDS(1), K_SECONDS(1));
 
     return 0;
