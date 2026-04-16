@@ -112,6 +112,15 @@ static void draw_bottom(lv_obj_t *widget, const struct status_state *state) {
     rotate_canvas(canvas);
 }
 
+static bool wpm_history_nonzero(const struct status_state *state) {
+    for (int i = 0; i < 10; i++) {
+        if (state->wpm[i] > 0) {
+            return true;
+        }
+    }
+    return false;
+}
+
 static void set_battery_status(struct zmk_widget_status *widget,
                                struct battery_status_state state) {
 #if IS_ENABLED(CONFIG_USB_DEVICE_STACK)
@@ -160,7 +169,7 @@ static void esb_display_poll_work_cb(struct k_work *work) {
     SYS_SLIST_FOR_EACH_CONTAINER(&widgets, widget, node) {
         
         bool layer_changed = (widget->state.layer_index != layer);
-        bool graph_active = (wpm > 0) || (widget->state.wpm[9] > 0);
+        bool graph_active = (wpm > 0) || wpm_history_nonzero(&widget->state);
 
         if (!layer_changed && !graph_active) {
             continue; 
